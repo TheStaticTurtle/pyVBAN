@@ -27,6 +27,7 @@ class VBAN_Recv(object):
 		self.rawPcm = None
 		self.running = True
 		self.verbose = verbose
+		self.rawData = None
 		print("pyVBAN-Recv Started")
 		print("Hint: Remeber that pyVBAN only support's PCM 16bits")
 
@@ -53,6 +54,7 @@ class VBAN_Recv(object):
 			print("Quit has been called")
 			return
 		data, addr = self.sock.recvfrom(2048) # buffer size is normally 1436 bytes Max size for vban
+		self.rawData = data
 		self._parseHeader(data)
 		if self.verbose:
 			print self.stream_magicString+" "+str(self.stream_sampRate)+"Hz "+str(self.stream_sampNum)+"samp "+str(self.stream_chanNum)+"chan Format:"+str(self.stream_dataFormat)+" Name:"+self.stream_streamName+" Frame:"+str(self.stream_frameCounter)
@@ -70,6 +72,58 @@ class VBAN_Recv(object):
 		while self.running:
 			self.runonce()
 		self.quit()
+
+	def quit(self):
+		self.running = False
+		self.stream.close()
+		self.stream = None
+
+class VBAN_Send(object):
+	"""docstring for VBAN_Send"""
+	def __init__(self, toIp, toPort, streamName, sampRate, inDeviceIndex ,verbose=False ):
+		super(VBAN_Send, self).__init__()
+		self.toIp = toIp
+		self.toPort = toPort
+		self.streamName = streamName
+		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+		self.sock.connect((self.toIp,self.toPort))
+		self.const_VBAN_SR = [6000, 12000, 24000, 48000, 96000, 192000, 384000, 8000, 16000, 32000, 64000, 128000, 256000, 512000,11025, 22050, 44100, 88200, 176400, 352800, 705600]
+		self.p = pyaudio.PyAudio()
+		self.channels = min([self.p.get_device_info_by_host_api_device_index(0, inDeviceIndex).get('maxInputChannels'),2])
+		if sampRate not in self.const_VBAN_SR:
+			print("SampRate not valid/compatible")
+			return
+		self.samprate = sampRate
+		self.inDeviceIndex = inDeviceIndex
+		self.chunkSize = 256
+		self.stream = self.p.open(format=self.p.get_format_from_width(2), channels=self.channels,rate=self.samprate, input=True,input_device_index = self.inDeviceIndex, frames_per_buffer=self.chunkSize)
+		self.framecounter = 0
+		self.running = True
+		self.verbose = verbose
+		self.rawPcm = None
+		self.rawData = None
+
+	def _constructFrame(self,pcmData):
+		header  = "VBAN" 
+		header += chr(self.const_VBAN_SR.index(self.samprate))
+		header += chr(self.chunkSize-1)
+		header += chr(self.channels-1)
+		header += chr(1)  #VBAN_CODEC_PCM
+		header += self.streamName + "\x00" * (16 - len(self.streamName))
+		header += struct.pack("l",self.framecounter)
+		if self.verbose:
+			print "VBAN "+str(self.samprate)+"Hz "+str(self.chunkSize)+"samp "+str(self.channels)+"chan Format:1 Name:"+self.streamName+" Frame:"+str(self.framecounter)
+		return header+pcmData
+
+	def runonce(self):
+		self.framecounter += 1
+		self.rawPcm = self.stream.read(self.chunkSize)
+		self.rawData = self._constructFrame(self.rawPcm)
+		self.sock.sendto(self.rawData, (self.toIp,self.toPort))
+
+	def runforever(self):
+		while self.running:
+			self.runonce()
 
 	def quit(self):
 		self.running = False

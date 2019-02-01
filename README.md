@@ -2,7 +2,10 @@
 python implementation of the VBAN (VB Audio network) protocol
 Specification here: https://www.vb-audio.com/Voicemeeter/VBANProtocol_Specifications.pdf
 
-pyVBAN.VBAN_Recv() usage:
+## Requierments
+Need of the pyaudio module
+
+## pyVBAN.VBAN_Recv() usage:
 ```python
 cl = VBAN_Recv("IP-FROM","StreamName",Port,OutputDeviceIndex,verbose=False)
 cl.runforever()

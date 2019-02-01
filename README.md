@@ -23,6 +23,27 @@ cl = VBAN_Recv("127.0.0.1","Stream7",6981,10,verbose=False)
 while True:
 	cl.runonce()
 ```
+
+## pyVBAN.VBAN_Send() usage:
+```python
+cl = VBAN_Send("IP-TO",PORT,"StreamName",SampleRate,DeviceInId,verbose=False)
+cl.runforever()
+```
+
+Example:
+```python
+cl = VBAN_Send("127.0.0.1",6980,"Stream8",48000,3,verbose=True)
+cl.runforever()
+```
+or
+
+```python
+cl = VBAN_Send("127.0.0.1",6980,"Stream8",48000,3,verbose=True)
+while True:
+	cl.runonce()
+```
+
+##Help
 To find the output device index you can use this code:
 
 ```python

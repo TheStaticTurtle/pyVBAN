@@ -43,7 +43,7 @@ while True:
 	cl.runonce()
 ```
 
-##Help
+## Help
 To find the output device index you can use this code:
 
 ```python

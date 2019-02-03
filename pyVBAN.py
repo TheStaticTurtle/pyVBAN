@@ -57,7 +57,7 @@ class VBAN_Recv(object):
 		self.rawData = data
 		self._parseHeader(data)
 		if self.verbose:
-			print self.stream_magicString+" "+str(self.stream_sampRate)+"Hz "+str(self.stream_sampNum)+"samp "+str(self.stream_chanNum)+"chan Format:"+str(self.stream_dataFormat)+" Name:"+self.stream_streamName+" Frame:"+str(self.stream_frameCounter)
+			print "R"+self.stream_magicString+" "+str(self.stream_sampRate)+"Hz "+str(self.stream_sampNum)+"samp "+str(self.stream_chanNum)+"chan Format:"+str(self.stream_dataFormat)+" Name:"+self.stream_streamName+" Frame:"+str(self.stream_frameCounter)
 		self.rawPcm = data[28:]   #Header stops a 28
 		if self.stream_magicString == "VBAN":
 			if not self.stream_streamName == self.streamName:
@@ -112,14 +112,17 @@ class VBAN_Send(object):
 		header += self.streamName + "\x00" * (16 - len(self.streamName))
 		header += struct.pack("l",self.framecounter)
 		if self.verbose:
-			print "VBAN "+str(self.samprate)+"Hz "+str(self.chunkSize)+"samp "+str(self.channels)+"chan Format:1 Name:"+self.streamName+" Frame:"+str(self.framecounter)
+			print "SVBAN "+str(self.samprate)+"Hz "+str(self.chunkSize)+"samp "+str(self.channels)+"chan Format:1 Name:"+self.streamName+" Frame:"+str(self.framecounter)
 		return header+pcmData
 
 	def runonce(self):
-		self.framecounter += 1
-		self.rawPcm = self.stream.read(self.chunkSize)
-		self.rawData = self._constructFrame(self.rawPcm)
-		self.sock.sendto(self.rawData, (self.toIp,self.toPort))
+		try:
+			self.framecounter += 1
+			self.rawPcm = self.stream.read(self.chunkSize)
+			self.rawData = self._constructFrame(self.rawPcm)
+			self.sock.sendto(self.rawData, (self.toIp,self.toPort))
+		except:
+			pass
 
 	def runforever(self):
 		while self.running:

@@ -135,3 +135,35 @@ class VBAN_Send(object):
 		self.running = False
 		self.stream.close()
 		self.stream = None
+
+
+class VBAN_SendText(object):
+	"""docstring for VBAN_SendText"""
+	def __init__(self, toIp, toPort,baudRate, streamName):
+		super(VBAN_SendText, self).__init__()
+		self.toIp = toIp
+		self.toPort = toPort
+		self.streamName = streamName
+		self.baudRate = baudRate
+		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+		self.sock.connect((self.toIp,self.toPort))
+		self.VBAN_BPSList = [0, 110, 150, 300, 600, 1200, 2400, 4800, 9600, 14400,19200, 31250, 38400, 57600, 115200, 128000, 230400, 250000, 256000, 460800,921600, 1000000, 1500000, 2000000, 3000000]
+		self.framecounter = 0
+
+	def _constructFrame(self,text):
+		header  = "VBAN" 
+		header += chr(int("0b01000000",2)  + self.VBAN_BPSList.index(self.baudRate))
+		header += chr(int("0b00000000",2))
+		header += chr(int("0b00000000",2))
+		header += chr(int("0b00010000",2)) # UTF8
+		header += self.streamName + "\x00" * (16 - len(self.streamName))
+		header += struct.pack("l",self.framecounter)
+		return header+text
+
+	def send(self,text):
+		try:
+			self.framecounter += 1
+			self.rawData = self._constructFrame(text)
+			self.sock.sendto(self.rawData, (self.toIp,self.toPort))
+		except Exception as e:
+			pass

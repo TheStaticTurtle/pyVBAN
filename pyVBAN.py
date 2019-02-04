@@ -28,6 +28,7 @@ class VBAN_Recv(object):
 		self.running = True
 		self.verbose = verbose
 		self.rawData = None
+		self.subprotocol = 0
 		print("pyVBAN-Recv Started")
 		print("Hint: Remeber that pyVBAN only support's PCM 16bits")
 
@@ -42,7 +43,9 @@ class VBAN_Recv(object):
 
 	def _parseHeader(self,data):
 		self.stream_magicString = data[0:4]
-		self.stream_sampRate = self.const_VBAN_SRList[ord(data[4])]
+		sampRateIndex = ord(data[4]) & 0x1F
+		self.subprotocol = (inByte & 0xE0) >> 5
+		self.stream_sampRate = self.const_VBAN_SRList[sampRateIndex]
 		self.stream_sampNum = ord(data[5]) + 1
 		self.stream_chanNum = ord(data[6]) + 1
 		self.stream_dataFormat = ord(data[7])
@@ -59,7 +62,7 @@ class VBAN_Recv(object):
 		if self.verbose:
 			print "R"+self.stream_magicString+" "+str(self.stream_sampRate)+"Hz "+str(self.stream_sampNum)+"samp "+str(self.stream_chanNum)+"chan Format:"+str(self.stream_dataFormat)+" Name:"+self.stream_streamName+" Frame:"+str(self.stream_frameCounter)
 		self.rawPcm = data[28:]   #Header stops a 28
-		if self.stream_magicString == "VBAN":
+		if self.stream_magicString == "VBAN" and self.subprotocol == 0:
 			if not self.stream_streamName == self.streamName:
 				return
 			if not addr[0] == self.senderIp:

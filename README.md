@@ -1,6 +1,7 @@
 # pyVBAN
 python implementation of the VBAN (VB Audio network) protocol
 Specification here: https://www.vb-audio.com/Voicemeeter/VBANProtocol_Specifications.pdf
+The module supports audio receiving and transmitting + text transmitting 
 
 ## Requierments
 Need of the pyaudio module
@@ -41,6 +42,18 @@ or
 cl = VBAN_Send("127.0.0.1",6980,"Stream8",48000,3,verbose=True)
 while True:
 	cl.runonce()
+```
+
+## pyVBAN.VBAN_SendText() usage:
+```python
+cl = VBAN_Send("IP-TO",PORT,BAUDRATE,"StreamName")
+cl.runforever()
+```
+
+Example:
+```python
+cl = VBAN_SendText("127.0.0.1",6980,9600,"Command1")
+cl.send("Strip[0].Gain = -6")
 ```
 
 ## Help

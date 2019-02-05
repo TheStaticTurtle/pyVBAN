@@ -46,8 +46,8 @@ while True:
 
 ## pyVBAN.VBAN_SendText() usage:
 ```python
-cl = VBAN_Send("IP-TO",PORT,BAUDRATE,"StreamName")
-cl.runforever()
+cl = VBAN_SendText("IP-TO",PORT,BAUDRATE,"StreamName")
+cl.send("Command")
 ```
 
 Example:

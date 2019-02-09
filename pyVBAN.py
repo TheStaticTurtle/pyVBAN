@@ -44,7 +44,7 @@ class VBAN_Recv(object):
 	def _parseHeader(self,data):
 		self.stream_magicString = data[0:4]
 		sampRateIndex = ord(data[4]) & 0x1F
-		self.subprotocol = (inByte & 0xE0) >> 5
+		self.subprotocol = (ord(data[4]) & 0xE0) >> 5
 		self.stream_sampRate = self.const_VBAN_SRList[sampRateIndex]
 		self.stream_sampNum = ord(data[5]) + 1
 		self.stream_chanNum = ord(data[6]) + 1

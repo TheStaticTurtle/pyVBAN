@@ -51,7 +51,7 @@ class VBAN_Recv(object):
 		self.stream_chanNum = data[6] + 1
 		self.stream_dataFormat = data[7]
 		self.stream_streamName = self._cutAtNullByte(b''.join(struct.unpack("cccccccccccccccc",data[8:24])))
-		self.stream_frameCounter = struct.unpack("l",data[24:28])[0]
+		self.stream_frameCounter = struct.unpack("<L",data[24:28])[0]
 
 	def runonce(self):
 		if self.stream == None:
@@ -115,7 +115,7 @@ class VBAN_Send(object):
 		header += bytes([self.channels-1])
 		header += b'\x01'  #VBAN_CODEC_PCM
 		header += bytes(self.streamName + "\x00" * (16 - len(self.streamName)), 'utf-8')
-		header += struct.pack("l",self.framecounter)
+		header += struct.pack("<L",self.framecounter)
 		if self.verbose:
 			print("SVBAN "+str(self.samprate)+"Hz "+str(self.chunkSize)+"samp "+str(self.channels)+"chan Format:1 Name:"+self.streamName+" Frame:"+str(self.framecounter))
 		return header+pcmData
@@ -158,7 +158,7 @@ class VBAN_SendText(object):
 		header += b'\x00' #Channel indent 0 by default
 		header += bytes([int("0b00010000",2)]) # UTF8
 		header += bytes(self.streamName + "\x00" * (16 - len(self.streamName)), 'utf-8')
-		header += struct.pack("l",self.framecounter)
+		header += struct.pack("<L",self.framecounter)
 		return header+bytes(text, 'utf-8')
 
 	def send(self,text):

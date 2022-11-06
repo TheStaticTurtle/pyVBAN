@@ -1,10 +1,11 @@
 # pyVBAN
-python implementation of the VBAN (VB Audio network) protocol
-Specification here: https://www.vb-audio.com/Voicemeeter/VBANProtocol_Specifications.pdf
-The module supports audio receiving and transmitting + text transmitting 
+Python implementation of the VBAN (VB Audio network) protocol, supporting audio
+transmit/receive and text transmission.
 
-## Requierments
-Need of the pyaudio module
+> [Specification available from the VB-Audio Support Site](https://www.vb-audio.com/Voicemeeter/VBANProtocol_Specifications.pdf)
+
+## Required Modules:
+* [`PyAudio` module](https://people.csail.mit.edu/hubert/pyaudio/)
 
 ## pyVBAN.VBAN_Recv() usage:
 ```python

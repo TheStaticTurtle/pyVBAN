@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "pyVBAN"
+version = "0.1.0"
+description = "Python implementation of the VBAN (VB-Audio Network) protocol"
+authors = [
+    "Samuel <samuel@thestaticturtle.fr>"
+]
+readme = "README.md"
+
+packages = [
+    {include = "pyvban"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyaudio = "^0.2.14"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

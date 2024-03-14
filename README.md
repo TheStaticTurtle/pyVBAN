@@ -1,4 +1,6 @@
 # pyVBAN
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pyVBAN)](https://pypi.org/project/pyVBAN/)
+
 
 Python implementation of the VBAN (VB Audio network) protocol
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyVBAN"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python implementation of the VBAN (VB-Audio Network) protocol"
 authors = [
     "Samuel <samuel@thestaticturtle.fr>"

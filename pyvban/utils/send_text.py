@@ -37,7 +37,7 @@ class VBAN_SendText:
 
             data = header.to_bytes() + text.encode("utf-8")
             data = data[:VBAN_PROTOCOL_MAX_SIZE]
-            self._socket.sendto(data, self._receiver)
+            self._socket.send(data)
         except Exception as e:
             self._logger.error(f"An exception occurred: {e}")
 
